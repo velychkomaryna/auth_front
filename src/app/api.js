@@ -22,7 +22,7 @@ client.interceptors.response.use(
             try {
                 await refreshToken();
                 // try to get origin request
-                return api(originalRequest);
+                return client(originalRequest);
             } catch (err) {
                 // move to login
                 localStorage.removeItem(USER_KEY);

@@ -8,7 +8,7 @@ import { useRouter } from "next/navigation";
 import { login, USER_KEY } from "@/app/api.js";
 
 const LoginSchema = Yup.object().shape({
-  username: Yup.string().required("Required"),
+  email: Yup.string().email("Wrong email").required("Required"),
   password: Yup.string().label("Password").label("Password").required(),
 });
 
@@ -27,7 +27,7 @@ export default function LoginForm() {
 
   return (
     <Formik
-      initialValues={{ username: '', password: '' }}
+      initialValues={{ email: '', password: '' }}
       validationSchema={LoginSchema}
       onSubmit={(values) => {
         mutation.mutate(values);
@@ -38,12 +38,12 @@ export default function LoginForm() {
         <Form>
           <Box mb={2}>
             <Field
-              name="username"
+              name="email"
               as={TextField}
-              label="Username"
+              label="Emamil"
               fullWidth
-              error={touched.username && !!errors.username}
-              helperText={touched.username && errors.username}
+              error={touched.email && !!errors.email}
+              helperText={touched.email && errors.email}
             />
           </Box>
           <Box mb={2}>

@@ -19,7 +19,7 @@ const geistMono = localFont({
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 1000,
+      staleTime: 30,
     },
   },
 });

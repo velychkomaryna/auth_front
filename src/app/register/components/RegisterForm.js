@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, TextField, Box, Typography } from '@mui/material';
+import { Button, TextField, Box, Typography, FormControl, InputLabel, Select, MenuItem, FormHelperText } from '@mui/material';
 import { Formik, Form, Field } from 'formik';
 import * as Yup from 'yup';
 import { useMutation } from "react-query";
@@ -9,9 +9,16 @@ import { useRouter } from "next/navigation";
 
 const passwordHint = "Password must contain at least one number, a lowercase letter, an uppercase letter and a special character (@, $, !, %, *, ?, &)";
 
+export const roles = [
+  { value: 'PM', label: 'Project Manager' },
+  { value: 'DEV', label: 'Developer' },
+  { value: 'QA', label: 'QA Engineer' },
+];
+
 const RegisterSchema = Yup.object().shape({
-  username: Yup.string().required("Required"),
   email: Yup.string().email("Wrong email").required("Required"),
+  role: Yup.string().required("Required"),
+  company_name: Yup.string().required("Required"), // to avoid set camelCase on BE
   password1: Yup.string()
         .label("Password")
         .min(8, "Password must be at least 8 characters")
@@ -40,25 +47,15 @@ export default function RegisterForm() {
 
   return (
     <Formik
-      initialValues={{ username: '', email: '', password1: '', password2: '' }}
+      initialValues={{ email: '', password1: '', password2: '' }}
       validationSchema={RegisterSchema}
       onSubmit={(values) => {
         mutation.mutate(values);
         console.log("Data send")
       }}
     >
-      {({ errors, touched }) => (
+      {({ values, errors, touched, handleChange, handleBlur}) => (
         <Form>
-          <Box mb={2}>
-            <Field
-              name="username"
-              as={TextField}
-              label="Username"
-              fullWidth
-              error={touched.username && !!errors.username}
-              helperText={touched.username && errors.username}
-            />
-          </Box>
           <Box mb={2}>
             <Field
               name="email"
@@ -89,6 +86,39 @@ export default function RegisterForm() {
               fullWidth
               error={touched.password2 && !!errors.password2}
               helperText={touched.password2 && errors.password2}
+            />
+          </Box>
+          <Box mb={2}>
+            <FormControl fullWidth error={touched.role && !!errors.role}>
+              <InputLabel>Role</InputLabel>
+                <Select
+                  name="role"
+                    value={values.role}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                >
+                    <MenuItem value="">
+                        <em>None</em>
+                    </MenuItem>
+                    {roles.map(({ value, label }) => (
+                        <MenuItem key={value} value={value}>
+                            {label}
+                        </MenuItem>
+                    ))}
+                </Select>
+                {touched.role && errors.role && (
+                    <FormHelperText>{errors.role}</FormHelperText>
+                )}
+              </FormControl>
+          </Box>
+          <Box mb={2}>
+            <Field
+              name="company_name"
+              as={TextField}
+              label="Company Name"
+              fullWidth
+              error={touched.company_name && !!errors.company_name}
+              helperText={touched.company_name && errors.company_name}
             />
           </Box>
           <Typography color="red">{mutation.isError && mutation.error.message}</Typography>
